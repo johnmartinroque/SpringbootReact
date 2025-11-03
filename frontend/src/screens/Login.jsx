@@ -4,6 +4,7 @@ import { loginUser } from "../api";
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState(""); // "success" | "error" | ""
   const [remember, setRemember] = useState(false);
 
   const handleChange = (e) =>
@@ -15,12 +16,15 @@ export default function Login() {
       const res = await loginUser(form);
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
-        setMessage("Login successful ✅");
+        setStatus("success");
+        setMessage("Login successful! Welcome back.");
       } else {
-        setMessage(res.data.error || "Login failed");
+        setStatus("error");
+        setMessage(res.data.error || "Invalid username or password.");
       }
     } catch (err) {
-      setMessage("Login failed ❌");
+      setStatus("error");
+      setMessage("Login failed. Please check your credentials.");
     }
   };
 
@@ -103,10 +107,49 @@ export default function Login() {
         Login
       </button>
 
-      {message && (
-        <p className="mt-4 text-center text-sm text-gray-700 dark:text-gray-300">
-          {message}
-        </p>
+      {/* ✅ Alerts with icon and border */}
+      {message && status === "error" && (
+        <div
+          className="flex items-center p-4 mt-5 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 
+                     dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+          role="alert"
+        >
+          <svg
+            className="shrink-0 inline w-4 h-4 mr-3"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+          </svg>
+          <span className="sr-only">Error</span>
+          <div>
+            <span className="font-medium">Error!</span> {message}
+          </div>
+        </div>
+      )}
+
+      {message && status === "success" && (
+        <div
+          className="flex items-center p-4 mt-5 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 
+                     dark:bg-gray-800 dark:text-green-400 dark:border-green-800"
+          role="alert"
+        >
+          <svg
+            className="shrink-0 inline w-4 h-4 mr-3"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+          </svg>
+          <span className="sr-only">Success</span>
+          <div>
+            <span className="font-medium">Success!</span> {message}
+          </div>
+        </div>
       )}
     </form>
   );

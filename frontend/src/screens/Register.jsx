@@ -1,90 +1,91 @@
-import { useState } from "react";
-import { registerUser } from "../api";
+import React, { useState } from "react";
 
-export default function Register() {
-  const [form, setForm] = useState({ username: "", password: "" });
+function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage("");
+
     try {
-      const res = await registerUser(form);
-      setMessage(res.data.message || "Registration successful ✅");
+      const res = await fetch("http://localhost:8080/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err || "Registration failed");
+      }
+
+      setMessage("Registration successful! You can now log in.");
+      setIsError(false);
     } catch (err) {
-      setMessage("Registration failed ❌");
+      setIsError(true);
+      setMessage(err.message || "Something went wrong");
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-sm mx-auto mt-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"
-    >
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-        Register
-      </h2>
-
-      <div className="mb-5">
-        <label
-          htmlFor="username"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Username
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          placeholder="Choose a username"
-          value={form.username}
-          onChange={handleChange}
-          required
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
-                     focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 
-                     dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 
-                     dark:focus:border-blue-500"
-        />
-      </div>
-
-      <div className="mb-5">
-        <label
-          htmlFor="password"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Enter a secure password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
-                     focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 
-                     dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 
-                     dark:focus:border-blue-500"
-        />
-      </div>
-
-      <button
-        type="submit"
-        className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none 
-                   focus:ring-green-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 
-                   text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-      >
-        Register
-      </button>
+    <div className="max-w-sm mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+      <h2 className="text-2xl font-semibold mb-4 text-center">Register</h2>
 
       {message && (
-        <p className="mt-4 text-center text-sm text-gray-700 dark:text-gray-300">
+        <div
+          className={`p-4 mb-4 text-sm rounded-lg ${
+            isError
+              ? "text-red-800 bg-red-50 dark:bg-gray-800 dark:text-red-400"
+              : "text-green-800 bg-green-50 dark:bg-gray-800 dark:text-green-400"
+          }`}
+          role="alert"
+        >
+          <span className="font-medium">{isError ? "Error:" : "Success!"}</span>{" "}
           {message}
-        </p>
+        </div>
       )}
-    </form>
+
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Name"
+          className="w-full p-2 border mb-3 rounded"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full p-2 border mb-3 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full p-2 border mb-3 rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+        >
+          Register
+        </button>
+      </form>
+    </div>
   );
 }
+
+export default Register;
