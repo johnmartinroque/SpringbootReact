@@ -5,7 +5,9 @@ import com.example.backend.security.JwtUtil;
 import com.example.backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -57,4 +59,18 @@ public class AuthController {
         }
         return response;
     }
+
+    @GetMapping("/users")
+    public List<Map<String, Object>> getAllUsers() {
+        List<Map<String, Object>> userList = new ArrayList<>();
+        for (User user : userService.getAllUsers()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", user.getId());
+            data.put("username", user.getUsername());
+            userList.add(data);
+        }
+        return userList;
 }
+}
+
+
