@@ -1,7 +1,12 @@
 import React from "react";
+import TodoComponent from "../components/TodoComponent";
 
 function Home() {
-  return <div>Home</div>;
+  return (
+    <div>
+      <TodoComponent />
+    </div>
+  );
 }
 
 export default Home;
