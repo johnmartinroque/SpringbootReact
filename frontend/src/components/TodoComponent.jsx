@@ -7,6 +7,7 @@ function TodoComponent() {
   const handleAddTodo = () => {
     setTodos([...todos, newTodo]);
     setNewTodo("");
+    console.log(todos);
   };
   return (
     <div className="max-w-2xl">
@@ -20,6 +21,7 @@ function TodoComponent() {
         </label>
         <input
           value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
           type="text"
           id="default-input"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -32,11 +34,9 @@ function TodoComponent() {
       >
         Default
       </button>
-      {todos
-        ? todos.map((todo, index) => {
-            <h1 key={index}>{todo}</h1>;
-          })
-        : null}
+      {todos.map((todo, index) => (
+        <h1 key={index}>{todo}</h1>
+      ))}
     </div>
   );
 }
